@@ -23,7 +23,10 @@ const routes = Router();
 routes
   .route('/')
   .get(requireToken, findUsersHandler)
-  .post(validateResource(createUserSchema), createUserHandler);
+  .post(
+    [validateRole(Role.admin), validateResource(createUserSchema)],
+    createUserHandler
+  );
 
 routes.route('/authenticate').post(loginHandler);
 
