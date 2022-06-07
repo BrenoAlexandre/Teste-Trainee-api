@@ -20,5 +20,5 @@ export default class User extends Base {
   public obs: string;
 
   @Column()
-  public permissions: string;
+  public role: string;
 }

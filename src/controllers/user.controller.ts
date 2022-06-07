@@ -57,8 +57,8 @@ export async function editUserHandler(
 ) {
   try {
     const { id } = req.params;
-    const { obs, permissions } = req.body;
-    const user = await editUser({ id, obs, permissions });
+    const { obs, role } = req.body;
+    const user = await editUser({ id, obs, role });
     res.status(200).send(user);
   } catch (error: any) {
     throw new ApiError(400, false, error.message);

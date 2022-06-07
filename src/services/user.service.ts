@@ -1,7 +1,7 @@
 import { getRepository } from 'typeorm';
 import config from '../config/config';
 import User from '../database/entities/User.Entity';
-import { Permissions, UserInput } from '../models/user.model';
+import { Role, UserInput } from '../models/user.model';
 import ApiError from '../utils/apiError.utils';
 import { decryptPassword } from '../utils/decrypt.utils';
 import { encryptPassword } from '../utils/encrypt.utils';
@@ -45,11 +45,7 @@ export async function createUser(input: UserInput) {
   return newUser;
 }
 
-export async function editUser(input: {
-  id: string;
-  obs: string;
-  permissions: Permissions;
-}) {
+export async function editUser(input: { id: string; obs: string; role: Role }) {
   const repository = getRepository(User);
   const user = await repository.findOne({ where: { id: input.id } });
   if (!user) {
@@ -57,7 +53,7 @@ export async function editUser(input: {
   }
 
   user.obs = input.obs;
-  user.permissions = input.permissions;
+  user.role = input.role;
   await repository.save(user);
   return user;
 }

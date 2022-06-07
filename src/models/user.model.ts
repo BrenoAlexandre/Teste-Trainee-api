@@ -5,10 +5,10 @@ export interface UserInput {
   confirmPassword: string;
   birthdate: Date;
   obs?: string;
-  permissions: Permissions;
+  role: Role;
 }
 
-export enum Permissions {
+export enum Role {
   admin = 'admin',
   user = 'user',
 }

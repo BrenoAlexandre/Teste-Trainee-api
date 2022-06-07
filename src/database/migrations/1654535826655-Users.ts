@@ -23,7 +23,7 @@ export class Users1654535826655 implements MigrationInterface {
           { name: 'birthdate', type: 'Date', isNullable: false },
           { name: 'obs', type: 'varchar', isNullable: true },
           {
-            name: 'permissions',
+            name: 'role',
             type: 'enum',
             enum: ['admin', 'user'],
           },

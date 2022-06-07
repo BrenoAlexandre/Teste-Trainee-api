@@ -9,6 +9,8 @@ import {
 } from '../../controllers/user.controller';
 import requireToken from '../../middlewares/requireToken';
 import validateResource from '../../middlewares/validateResource';
+import validateRole from '../../middlewares/validateRole';
+import { Role } from '../../models/user.model';
 import {
   createUserSchema,
   deleteUserSchema,
@@ -27,10 +29,24 @@ routes.route('/authenticate').post(loginHandler);
 
 routes
   .route('/:id')
-  .get([validateResource(getUserSchema), requireToken], findUserHandler)
-  .put([validateResource(updateUserSchema), requireToken], editUserHandler)
+  .get(
+    [requireToken, validateRole(Role.admin), validateResource(getUserSchema)],
+    findUserHandler
+  )
+  .put(
+    [
+      requireToken,
+      validateRole(Role.admin),
+      validateResource(updateUserSchema),
+    ],
+    editUserHandler
+  )
   .delete(
-    [validateResource(deleteUserSchema), requireToken],
+    [
+      requireToken,
+      validateRole(Role.admin),
+      validateResource(deleteUserSchema),
+    ],
     deleteUserHandler
   );
 

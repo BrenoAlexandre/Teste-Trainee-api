@@ -1,5 +1,5 @@
 import { object, string, date, mixed, InferType } from 'yup';
-import { Permissions } from '../models/user.model';
+import { Role } from '../models/user.model';
 
 /**
  * @openapi
@@ -13,7 +13,7 @@ import { Permissions } from '../models/user.model';
  *        - password
  *        - confirmPassword
  *        - birthdate
- *        - permissions
+ *        - role
  *       properties:
  *         name:
  *           type: string
@@ -27,7 +27,7 @@ import { Permissions } from '../models/user.model';
  *           type: Date
  *         obs:
  *           type: string
- *         permissions:
+ *         role:
  *           type: string
  */
 
@@ -41,8 +41,8 @@ export const payload = {
       .required('User password confirmation is required'),
     birthdate: date().required('user birthdate is required'),
     obs: string().default(''),
-    permissions: mixed<Permissions>()
-      .oneOf(Object.values(Permissions))
+    role: mixed<Role>()
+      .oneOf(Object.values(Role))
       .required('user must be assigned a permission role'),
   }),
 };
