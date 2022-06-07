@@ -22,7 +22,7 @@ const routes = Router();
 
 routes
   .route('/')
-  .get(findUsersHandler)
+  .get(requireToken, findUsersHandler)
   .post(validateResource(createUserSchema), createUserHandler);
 
 routes.route('/authenticate').post(loginHandler);
