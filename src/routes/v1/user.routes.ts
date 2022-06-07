@@ -5,7 +5,9 @@ import {
   editUserHandler,
   findUserHandler,
   findUsersHandler,
+  loginHandler,
 } from '../../controllers/user.controller';
+import requireToken from '../../middlewares/requireToken';
 import validateResource from '../../middlewares/validateResource';
 import {
   createUserSchema,
@@ -20,10 +22,16 @@ routes
   .route('/')
   .get(findUsersHandler)
   .post(validateResource(createUserSchema), createUserHandler);
+
+routes.route('/authenticate').post(loginHandler);
+
 routes
   .route('/:id')
-  .get(validateResource(getUserSchema), findUserHandler)
-  .put(validateResource(updateUserSchema), editUserHandler)
-  .delete(validateResource(deleteUserSchema), deleteUserHandler);
+  .get([validateResource(getUserSchema), requireToken], findUserHandler)
+  .put([validateResource(updateUserSchema), requireToken], editUserHandler)
+  .delete(
+    [validateResource(deleteUserSchema), requireToken],
+    deleteUserHandler
+  );
 
 export default routes;

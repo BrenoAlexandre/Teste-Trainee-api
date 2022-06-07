@@ -1,8 +1,11 @@
 import { getRepository } from 'typeorm';
+import config from '../config/config';
 import User from '../database/entities/User.Entity';
 import { Permissions, UserInput } from '../models/user.model';
 import ApiError from '../utils/apiError.utils';
+import { decryptPassword } from '../utils/decrypt.utils';
 import { encryptPassword } from '../utils/encrypt.utils';
+import { signJwt } from '../utils/jwt.utils';
 
 export async function getUsers() {
   const repository = getRepository(User);
@@ -16,7 +19,7 @@ export async function getUsers() {
 
 export async function getUser(id: string) {
   const repository = getRepository(User);
-  const user = repository.findOne({ where: { id } });
+  const user = repository.findOne(id);
   if (!user) {
     throw new Error('No user found');
   }
@@ -67,4 +70,30 @@ export async function deleteUser(id: string) {
   }
 
   await repository.delete(id);
+}
+
+export async function authenticateUser(input: {
+  cpf: string;
+  password: string;
+}) {
+  const { cpf, password } = input;
+  const repository = getRepository(User);
+  const user = await repository.findOne({ where: { cpf } });
+
+  if (!user) {
+    throw new ApiError(400, false, 'User not found');
+  }
+
+  const isValid = await decryptPassword(password, user.password);
+
+  if (!isValid) {
+    throw new ApiError(400, false, 'Credentials are incorrect');
+  }
+
+  user.password = '';
+
+  return {
+    user,
+    token: signJwt({ ...user }, { expiresIn: config.accessTokenTtl }),
+  };
 }
