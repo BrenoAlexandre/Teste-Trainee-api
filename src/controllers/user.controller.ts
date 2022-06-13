@@ -80,7 +80,7 @@ export async function deleteUserHandler(
 export async function loginHandler(req: Request, res: Response) {
   try {
     const { token, user } = await authenticateUser(req.body);
-    res.status(200).setHeader('authorization', `Bearer ${token}`).send(user);
+    res.status(200).setHeader('authorization', token).send(user);
   } catch (error: any) {
     throw new ApiError(400, false, error.message);
   }
