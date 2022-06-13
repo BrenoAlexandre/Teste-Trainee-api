@@ -10,22 +10,24 @@ const validateRole =
       const [scheme, accessToken] = get(req, 'headers.authorization', '').split(
         ' '
       );
-      if (!accessToken) {
+      if (!accessToken || !scheme) {
         return res.status(401).send({ error: 'Token error' });
       }
 
       const { decoded } = verifyJwt(accessToken);
-      if (!decoded) {
+      if (!decoded || typeof decoded === 'string') {
         return res.status(403).send({ error: 'Permission denied' });
       }
 
       if (decoded.role !== role) {
         return res.status(403).send({ error: 'Permission denied' });
       }
-      next();
+
+      return next();
     } catch (e: any) {
       res.status(StatusCodes.BAD_REQUEST).send(e.errors);
     }
+    return next();
   };
 
 export default validateRole;

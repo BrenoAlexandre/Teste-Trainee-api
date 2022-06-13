@@ -47,6 +47,18 @@ export const payload = {
   }),
 };
 
+export const updatePayload = {
+  body: object().shape({
+    name: string().required('User name is required'),
+    cpf: string().required('User cpf is required'),
+    birthdate: date().required('user birthdate is required'),
+    obs: string().default(''),
+    role: mixed<Role>()
+      .oneOf(Object.values(Role))
+      .required('user must be assigned a permission role'),
+  }),
+};
+
 const params = {
   params: object({ id: string().defined('user id is required') }),
 };
@@ -56,7 +68,7 @@ export const createUserSchema = object({
 });
 
 export const updateUserSchema = object({
-  ...payload,
+  ...updatePayload,
   ...params,
 });
 

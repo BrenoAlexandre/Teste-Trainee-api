@@ -1,10 +1,10 @@
 import bcrypt from 'bcrypt';
 
 export async function decryptPassword(
-  hashPassword: string,
-  password: string
+  password: string,
+  hashPassword: string
 ): Promise<boolean> {
-  if (!(await bcrypt.compare(hashPassword, password))) {
+  if (!(await bcrypt.compare(password, hashPassword))) {
     return false;
   }
   return true;

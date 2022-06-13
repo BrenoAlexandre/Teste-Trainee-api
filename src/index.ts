@@ -16,7 +16,7 @@ const app = express();
 app.use(express.json());
 app.use(helmet());
 app.use(compression());
-app.use(cors());
+app.use(cors({ exposedHeaders: ['Authorization'] }));
 app.options('*', cors());
 app.use(deserializeUser);
 
