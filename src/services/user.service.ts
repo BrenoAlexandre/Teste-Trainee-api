@@ -9,7 +9,7 @@ import { signJwt } from '../utils/jwt.utils';
 
 export async function getUsers() {
   const repository = getRepository(User);
-  const user = repository.find({ order: { created_at: 'DESC' } });
+  const user = await repository.find({ order: { created_at: 'DESC' } });
   if (!user) {
     throw new Error('User database is empty');
   }
@@ -19,7 +19,7 @@ export async function getUsers() {
 
 export async function getUser(id: string) {
   const repository = getRepository(User);
-  const user = repository.findOne(id);
+  const user = await repository.findOne(id);
   if (!user) {
     throw new Error('No user found');
   }
@@ -32,7 +32,7 @@ export async function createUser(input: UserInput) {
   const repository = getRepository(User);
   const cpfExists = await repository.findOne({ where: { cpf } });
   if (cpfExists) {
-    throw new ApiError(401, false, 'This user cpf is already registered');
+    throw new ApiError(409, false, 'This user cpf is already registered');
   }
 
   const hashPassword = await encryptPassword(input.password);

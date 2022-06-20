@@ -5,7 +5,7 @@ import { Role } from '../models/user.model';
  * @openapi
  * components:
  *   schemas:
- *     User:
+ *     CreateUser:
  *       type: object
  *       required:
  *        - name
@@ -17,17 +17,66 @@ import { Role } from '../models/user.model';
  *       properties:
  *         name:
  *           type: string
+ *           description: User name
  *         cpf:
  *           type: string
+ *           description: Unique user CPF
  *         password:
  *           type: string
+ *           description: User password
  *         confirmPassword:
  *           type: string
+ *           description: User confirmation password for validation
  *         birthdate:
- *           type: Date
+ *           type: string
+ *           format: date
+ *           description: User birthdate
+ *         role:
+ *           type: string
+ *           enum:
+ *             - admin
+ *             - user
+ *           description: User role responsible for permissions
  *         obs:
  *           type: string
+ *           description: User description
+ *     UserResponse:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: User random generated uuidv4
+ *         name:
+ *           type: string
+ *           description: User name
+ *         cpf:
+ *           type: string
+ *           description: Unique user CPF
+ *         birthdate:
+ *           type: string
+ *           format: date
+ *           description: User birthdate
  *         role:
+ *           type: string
+ *           enum:
+ *             - admin
+ *             - user
+ *           description: User role responsible for permissions
+ *         obs:
+ *           type: string
+ *           description: User description
+ *         created_at:
+ *           type: string
+ *           description: User creation timestamp
+ *         updated_at:
+ *           type: string
+ *           description: User last edition timestamp
+ *     Error:
+ *       type: object
+ *       properties:
+ *         code:
+ *           type: number
+ *         message:
  *           type: string
  */
 
