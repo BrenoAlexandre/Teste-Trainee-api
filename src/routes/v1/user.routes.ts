@@ -5,7 +5,6 @@ import {
   editUserHandler,
   findUserHandler,
   findUsersHandler,
-  loginHandler,
 } from '../../controllers/user.controller';
 import requireToken from '../../middlewares/requireToken';
 import validateResource from '../../middlewares/validateResource';
@@ -21,8 +20,13 @@ import {
 /**
  * @openapi
  * paths:
- *  '/api/v1/users':
+ *  /api/v1/users:
  *   get:
+ *      parameters:
+ *       - name: Bearer token
+ *         in: path
+ *         description: authentication token
+ *         required: true
  *      tags:
  *      - Users
  *      summary: Get all registered users
@@ -35,15 +39,29 @@ import {
  *                items:
  *                  $ref: '#/components/schemas/UserResponse'
  *        400:
- *          description: Unauthorized
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               code: 400
+ *               message: Bad Request
+ *        404:
+ *          description: Not found
  *          content:
  *            application/json:
  *              schema:
  *                $ref: '#/components/schemas/Error'
  *              example:
- *                code: 400
+ *                code: 404
  *                message: Empty database
  *   post:
+ *      parameters:
+ *       - name: Bearer token
+ *         in: path
+ *         description: authentication token
+ *         required: true
  *      tags:
  *      - Users
  *      summary: Create a new user
@@ -80,6 +98,10 @@ import {
  *  '/api/v1/users/{id}':
  *   get:
  *     parameters:
+ *      - name: Bearer token
+ *        in: path
+ *        description: authentication token
+ *        required: true
  *      - name: userId
  *        in: path
  *        description: The user database id
@@ -93,15 +115,6 @@ import {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/UserResponse'
- *       400:
- *         description: Unauthorized
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *             example:
- *               code: 400
- *               message: An error ocurred while creating the user
  *       403:
  *         description: Unauthorized
  *         content:
@@ -111,7 +124,21 @@ import {
  *             example:
  *               code: 403
  *               message: Request is unauthorized
+ *       404:
+ *         description: Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               code: 404
+ *               message: User not found
  *   put:
+ *     parameters:
+ *      - name: Bearer token
+ *        in: path
+ *        description: authentication token
+ *        required: true
  *     tags:
  *     - Users
  *     summary: Edit a user by it's id
@@ -121,6 +148,15 @@ import {
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/UserResponse'
+ *       400:
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               code: 400
+ *               message: Bad Request
  *       403:
  *         description: Unauthorized
  *         content:
@@ -130,7 +166,21 @@ import {
  *             example:
  *               code: 403
  *               message: Request is unauthorized
+ *       404:
+ *        description: Not Found
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Error'
+ *            example:
+ *              code: 404
+ *              message: User not found
  *   delete:
+ *     parameters:
+ *      - name: Bearer token
+ *        in: path
+ *        description: authentication token
+ *        required: true
  *     tags:
  *     - Users
  *     summary: Delete a user by it's id
@@ -146,6 +196,15 @@ import {
  *             example:
  *               code: 403
  *               message: Request is unauthorized
+ *       404:
+ *        description: Not Found
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Error'
+ *            example:
+ *              code: 404
+ *              message: User not found
  */
 const routes = Router();
 
@@ -160,8 +219,6 @@ routes
     ],
     createUserHandler
   );
-
-routes.route('/authenticate').post(loginHandler);
 
 routes
   .route('/:id')
