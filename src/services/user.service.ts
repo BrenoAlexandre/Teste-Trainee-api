@@ -1,44 +1,41 @@
 import { getRepository } from 'typeorm';
-import config from '../config/config';
 import User from '../database/entities/User.Entity';
 import { Role, UserInput } from '../models/user.model';
 import ApiError from '../utils/apiError.utils';
-import { decryptPassword } from '../utils/decrypt.utils';
 import { encryptPassword } from '../utils/encrypt.utils';
-import { signJwt } from '../utils/jwt.utils';
 
 export async function getUsers() {
   const repository = getRepository(User);
-  const user = await repository.find({ order: { created_at: 'DESC' } });
-  if (!user) {
-    throw new Error('User database is empty');
+  const users = await repository.find({ order: { created_at: 'DESC' } });
+  if (!users) {
+    throw new ApiError(400, false, 'Users not found');
   }
 
-  return user;
+  return users;
 }
 
 export async function getUser(id: string) {
   const repository = getRepository(User);
   const user = await repository.findOne(id);
   if (!user) {
-    throw new Error('No user found');
+    throw new ApiError(400, false, 'User not found');
   }
 
   return user;
 }
 
 export async function createUser(input: UserInput) {
-  const { cpf } = input;
+  const { cpf, password } = input;
   const repository = getRepository(User);
   const cpfExists = await repository.findOne({ where: { cpf } });
   if (cpfExists) {
-    throw new ApiError(409, false, 'This user cpf is already registered');
+    throw new ApiError(409, false, 'User cpf is already registered');
   }
 
-  const hashPassword = await encryptPassword(input.password);
+  const hashPassword = await encryptPassword(password);
   const newUser = repository.create({ ...input, password: hashPassword });
   if (!newUser) {
-    throw new Error('An error ocurred while creating the user');
+    throw new ApiError(500, false, 'An error ocurred while creating the user');
   }
 
   await repository.save(newUser);
@@ -49,7 +46,7 @@ export async function editUser(input: { id: string; obs: string; role: Role }) {
   const repository = getRepository(User);
   const user = await repository.findOne({ where: { id: input.id } });
   if (!user) {
-    throw new Error(`This user doesn't exists}`);
+    throw new ApiError(400, false, `User does not exists}`);
   }
 
   user.obs = input.obs;
@@ -62,34 +59,8 @@ export async function deleteUser(id: string) {
   const repository = getRepository(User);
   const user = await repository.findOne(id);
   if (!user) {
-    throw new Error(`This user doesn't exists}`);
+    throw new ApiError(400, false, `User does not exists}`);
   }
 
   await repository.delete(id);
-}
-
-export async function authenticateUser(input: {
-  cpf: string;
-  password: string;
-}) {
-  const { cpf, password } = input;
-  const repository = getRepository(User);
-  const user = await repository.findOne({ where: { cpf } });
-
-  if (!user) {
-    throw new ApiError(400, false, 'User not found');
-  }
-
-  const isValid = await decryptPassword(password, user.password);
-
-  if (!isValid) {
-    throw new ApiError(400, false, 'Credentials are incorrect');
-  }
-
-  user.password = '';
-
-  return {
-    user,
-    token: signJwt({ ...user }, { expiresIn: config.accessTokenTtl }),
-  };
 }

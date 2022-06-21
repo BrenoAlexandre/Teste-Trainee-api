@@ -6,14 +6,12 @@ import {
   UpdateUserInput,
 } from '../schemas/user.schema';
 import {
-  authenticateUser,
   createUser,
   deleteUser,
   editUser,
   getUser,
   getUsers,
 } from '../services/user.service';
-import ApiError from '../utils/apiError.utils';
 
 export async function findUsersHandler(
   req: Request<{}, {}, {}>,
@@ -23,7 +21,7 @@ export async function findUsersHandler(
     const users = await getUsers();
     res.status(200).send(users);
   } catch (error: any) {
-    throw new ApiError(error.code, false, error.message);
+    res.status(error.statusCode).send(error.message);
   }
 }
 
@@ -33,9 +31,9 @@ export async function createUserHandler(
 ) {
   try {
     const user = await createUser(req.body);
-    return res.status(200).send(user);
+    res.status(201).send(user);
   } catch (error: any) {
-    throw new ApiError(error.code, false, error.message);
+    res.status(error.statusCode).send(error.message);
   }
 }
 
@@ -47,7 +45,7 @@ export async function findUserHandler(
     const user = await getUser(req.params.id);
     res.status(200).send(user);
   } catch (error: any) {
-    throw new ApiError(error.code, false, error.message);
+    res.status(error.statusCode).send(error.message);
   }
 }
 
@@ -61,7 +59,7 @@ export async function editUserHandler(
     const user = await editUser({ id, obs, role });
     res.status(200).send(user);
   } catch (error: any) {
-    throw new ApiError(error.code, false, error.message);
+    res.status(error.statusCode).send(error.message);
   }
 }
 
@@ -73,15 +71,6 @@ export async function deleteUserHandler(
     await deleteUser(req.params.id);
     res.status(200).send();
   } catch (error: any) {
-    throw new ApiError(error.code, false, error.message);
-  }
-}
-
-export async function loginHandler(req: Request, res: Response) {
-  try {
-    const { token, user } = await authenticateUser(req.body);
-    res.status(200).setHeader('authorization', token).send(user);
-  } catch (error: any) {
-    throw new ApiError(error.code, false, error.message);
+    res.status(error.statusCode).send(error.message);
   }
 }

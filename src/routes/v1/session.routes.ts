@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { loginHandler } from '../../controllers/user.controller';
+import { loginHandler } from '../../controllers/session.controller';
 
 /**
  * @openapi
