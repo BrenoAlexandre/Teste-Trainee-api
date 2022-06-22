@@ -24,7 +24,7 @@ const deserializeUser = async (
   }
 
   if (expired) {
-    return res.sendStatus(401);
+    return res.status(401).send('Token expired');
   }
 
   return next();

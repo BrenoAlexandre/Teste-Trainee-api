@@ -6,7 +6,7 @@ import { encryptPassword } from '../utils/encrypt.utils';
 
 export async function getUsers() {
   const repository = getRepository(User);
-  const users = await repository.find({ order: { created_at: 'DESC' } });
+  const users = await repository.find({ order: { created_at: 'ASC' } });
   if (!users) {
     throw new ApiError(400, false, 'Users not found');
   }
